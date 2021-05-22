@@ -328,7 +328,6 @@ class BooleanMatrixGeneratorTest {
     }
 
     @Test
-    @Disabled
     void shouldAssesAndsBeforeOrs2() {
         BooleanMatrixGenerator booleanMatrixGenerator = new BooleanMatrixGenerator();
         OutcomeMatrix outcomeMatrix = booleanMatrixGenerator.resolve("cat == dog || fish == mouse && lion == monkey");
