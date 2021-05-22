@@ -3,7 +3,7 @@ package io.koth;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -16,10 +16,13 @@ class BooleanMatrixGeneratorTest {
         OutcomeMatrix outcomeMatrix = booleanMatrixGenerator.resolve("cat == dog");
 
         List<Outcome> outcomes = outcomeMatrix.getOutcomes();
-        assertThat(outcomes, expectOutcomes(
-                outcome(false, comparison("cat == dog", false)),
-                outcome(true, comparison("cat == dog", true))
-        ));
+
+        assertThat(outcomes,
+                buildExpectedOutcomes(
+                        statements("cat == dog"),
+                        outcome(false, false),
+                        outcome(true, true)
+                ));
     }
 
     @Test
@@ -28,9 +31,12 @@ class BooleanMatrixGeneratorTest {
         OutcomeMatrix outcomeMatrix = booleanMatrixGenerator.resolve("cat != dog");
 
         List<Outcome> outcomes = outcomeMatrix.getOutcomes();
-        assertThat(outcomes, expectOutcomes(
-                        outcome(false, comparison("cat != dog", false)),
-                        outcome(true, comparison("cat != dog", true))));
+        assertThat(outcomes,
+                buildExpectedOutcomes(
+                        statements("cat != dog"),
+                        outcome(false, false),
+                        outcome(true, true)
+                ));
     }
 
     @Test
@@ -40,25 +46,13 @@ class BooleanMatrixGeneratorTest {
 
         List<Outcome> outcomes = outcomeMatrix.getOutcomes();
         assertThat(outcomes,
-                expectOutcomes(
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", false)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", false)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", true)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", true)
-                        )
-                )
-        );
+                buildExpectedOutcomes(
+                        statements("cat == dog", "fish == mouse"),
+                        outcome(false, false, false),
+                        outcome(true, false, false),
+                        outcome(false, true, false),
+                        outcome(true, true, true)
+                ));
     }
 
     @Test
@@ -68,28 +62,14 @@ class BooleanMatrixGeneratorTest {
 
         List<Outcome> outcomes = outcomeMatrix.getOutcomes();
         assertThat(outcomes,
-                expectOutcomes(
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", true)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", true)
-                        )
-                )
-        );
+                buildExpectedOutcomes(
+                        statements("cat == dog", "fish == mouse"),
+                        outcome(false, false, false),
+                        outcome(true, false, true),
+                        outcome(false, true, true),
+                        outcome(true, true, true)
+                ));
     }
-
-
 
     @Test
     void shouldResolveCombinationsWhenComparingTwoBooleanResultsWithXOr() {
@@ -98,25 +78,13 @@ class BooleanMatrixGeneratorTest {
 
         List<Outcome> outcomes = outcomeMatrix.getOutcomes();
         assertThat(outcomes,
-                expectOutcomes(
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", true)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", true)
-                        )
-                )
-        );
+                buildExpectedOutcomes(
+                        statements("cat == dog", "fish == mouse"),
+                        outcome(false, false, false),
+                        outcome(true, false, true),
+                        outcome(false, true, true),
+                        outcome(true, true, false)
+                ));
     }
 
     @Test
@@ -126,49 +94,17 @@ class BooleanMatrixGeneratorTest {
 
         List<Outcome> outcomes = outcomeMatrix.getOutcomes();
         assertThat(outcomes,
-                expectOutcomes(
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", true)
-                        )
-                )
-        );
+                buildExpectedOutcomes(
+                        statements("cat == dog", "fish == mouse", "lion == monkey"),
+                        outcome(false, false, false, false),
+                        outcome(true, false, false, false),
+                        outcome(false, true, false, false),
+                        outcome(true, true, false, false),
+                        outcome(false, false, true, false),
+                        outcome(true, false, true, false),
+                        outcome(false, true, true, false),
+                        outcome(true, true, true, true)
+                ));
     }
 
     @Test
@@ -178,49 +114,17 @@ class BooleanMatrixGeneratorTest {
 
         List<Outcome> outcomes = outcomeMatrix.getOutcomes();
         assertThat(outcomes,
-                expectOutcomes(
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", true)
-                        )
-                )
-        );
+                buildExpectedOutcomes(
+                        statements("cat == dog", "fish == mouse", "lion == monkey"),
+                        outcome(false, false, false, false),
+                        outcome(true, false, false, true),
+                        outcome(false, true, false, true),
+                        outcome(true, true, false, true),
+                        outcome(false, false, true, true),
+                        outcome(true, false, true, true),
+                        outcome(false, true, true, true),
+                        outcome(true, true, true, true)
+                ));
     }
 
     @Test
@@ -230,49 +134,17 @@ class BooleanMatrixGeneratorTest {
 
         List<Outcome> outcomes = outcomeMatrix.getOutcomes();
         assertThat(outcomes,
-                expectOutcomes(
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", true)
-                        )
-                )
-        );
+                buildExpectedOutcomes(
+                        statements("cat == dog", "fish == mouse", "lion == monkey"),
+                        outcome(false, false, false, false),
+                        outcome(true, false, false, true),
+                        outcome(false, true, false, true),
+                        outcome(true, true, false, false),
+                        outcome(false, false, true, true),
+                        outcome(true, false, true, false),
+                        outcome(false, true, true, false),
+                        outcome(true, true, true, true)
+                ));
     }
 
     @Test
@@ -282,51 +154,18 @@ class BooleanMatrixGeneratorTest {
 
         List<Outcome> outcomes = outcomeMatrix.getOutcomes();
         assertThat(outcomes,
-                expectOutcomes(
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", true)
-                        )
-                )
-        );
+                buildExpectedOutcomes(
+                        statements("cat == dog", "fish == mouse", "lion == monkey"),
+                        outcome(false, false, false, false),
+                        outcome(true, false, false, false),
+                        outcome(false, true, false, false),
+                        outcome(true, true, false, true),
+                        outcome(false, false, true, true),
+                        outcome(true, false, true, true),
+                        outcome(false, true, true, true),
+                        outcome(true, true, true, true)
+                ));
     }
-
     @Test
     void shouldAssessAndsBeforeOrs2() {
         BooleanMatrixGenerator booleanMatrixGenerator = new BooleanMatrixGenerator();
@@ -334,63 +173,87 @@ class BooleanMatrixGeneratorTest {
 
         List<Outcome> outcomes = outcomeMatrix.getOutcomes();
         assertThat(outcomes,
-                expectOutcomes(
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", false)
-                        ),
-                        outcome(false,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", false),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", false),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", true)
-                        ),
-                        outcome(true,
-                                comparison("cat == dog", true),
-                                comparison("fish == mouse", true),
-                                comparison("lion == monkey", true)
-                        )
-                )
-        );
+                buildExpectedOutcomes(
+                        statements("cat == dog", "fish == mouse", "lion == monkey"),
+                        outcome(false, false, false, false),
+                        outcome(true, false, false, true),
+                        outcome(false, true, false, false),
+                        outcome(true, true, false, true),
+                        outcome(false, false, true, false),
+                        outcome(true, false, true, true),
+                        outcome(false, true, true, true),
+                        outcome(true, true, true, true)
+                ));
     }
 
-    private BooleanComparison comparison(String statement, boolean result) {
-        return new BooleanComparison(statement, result);
+    @Test
+    void shouldPrioritiseScopeOverOrder() {
+        BooleanMatrixGenerator booleanMatrixGenerator = new BooleanMatrixGenerator();
+        OutcomeMatrix outcomeMatrix = booleanMatrixGenerator.resolve("cat == dog && (fish == mouse || lion == monkey)");
+
+        List<Outcome> outcomes = outcomeMatrix.getOutcomes();
+
+        assertThat(outcomes,
+                buildExpectedOutcomes(
+                        statements("cat == dog", "fish == mouse", "lion == monkey"),
+                        outcome(false, false, false, false),
+                        outcome(true, false, false, false),
+                        outcome(false, true, false, false),
+                        outcome(true, true, false, true),
+                        outcome(false, false, true, false),
+                        outcome(true, false, true, true),
+                        outcome(false, true, true, false),
+                        outcome(true, true, true, true)
+        ));
+    }
+
+    @Test
+    @Disabled
+    void shouldPrioritiseScopeOverAnd() {
+        BooleanMatrixGenerator booleanMatrixGenerator = new BooleanMatrixGenerator();
+        OutcomeMatrix outcomeMatrix = booleanMatrixGenerator.resolve("(cat == dog || fish == mouse) && lion == monkey");
+
+        List<Outcome> outcomes = outcomeMatrix.getOutcomes();
+
+        assertThat(outcomes,
+                buildExpectedOutcomes(
+                        statements("cat == dog", "fish == mouse", "lion == monkey"),
+                        outcome(false, false, false, false),
+                        outcome(true, false, false, false),
+                        outcome(false, true, false, false),
+                        outcome(true, true, false, false),
+                        outcome(false, false, true, false),
+                        outcome(true, false, true, true),
+                        outcome(false, true, true, true),
+                        outcome(true, true, true, true)
+                ));
+    }
+
+    private String[] statements(String... s) {
+        return s;
     }
 
 
-    private OutcomesMatcher expectOutcomes(Outcome... outcomes)
+    private OutcomesMatcher buildExpectedOutcomes(String[] statements, boolean[]... outcomes)
     {
-        return new OutcomesMatcher(outcomes);
+        List<Outcome> builtOutcomes = new ArrayList<>();
+        for (boolean[] outcome : outcomes) {
+            List<BooleanComparison> comparisons = new ArrayList<>();
+
+            for (int i = 0; i < statements.length; i++) {
+                final String statement = statements[i];
+                comparisons.add(new BooleanComparison(statement, outcome[i]));
+
+            }
+
+            builtOutcomes.add(new Outcome(comparisons, outcome[outcome.length - 1]));
+        }
+        return new OutcomesMatcher(builtOutcomes.toArray(new Outcome[0]));
     }
 
-    private Outcome outcome(final boolean result, final BooleanComparison... booleanComparisons)
+    private boolean[] outcome(boolean... argsAndResult)
     {
-        return new Outcome(Arrays.asList(booleanComparisons), result);
+        return argsAndResult;
     }
+
 }

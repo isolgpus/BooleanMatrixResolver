@@ -18,6 +18,10 @@ public class LogicParser {
                 handleInstance(currentWord.toString()).ifPresent(conditions::add);
                 currentWord = new StringBuilder();
             }
+            else if (c == '(' || c == ')')
+            {
+                handleInstance(String.valueOf(c));
+            }
             else
             {
                 currentWord.append(c);

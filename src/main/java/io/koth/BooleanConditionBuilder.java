@@ -10,6 +10,19 @@ public class BooleanConditionBuilder {
     private List<String> rawInput = new ArrayList<>();
     private final ScopeDepthTracker scopeDepthTracker = new ScopeDepthTracker();
     public Optional<BooleanCheck> handleInstance(String instance) {
+        if(instance.equals("("))
+        {
+            scopeDepthTracker.incrementScopeDepth();
+            return Optional.empty();
+        }
+
+        if(instance.equals(")"))
+        {
+            scopeDepthTracker.registerDecrementScopeDepth();
+            return Optional.empty();
+
+        }
+
         Optional<Operator> operator = Operator.resolveOperator(instance);
 
         if(operator.isPresent())
@@ -31,6 +44,7 @@ public class BooleanConditionBuilder {
         Optional<BooleanCheck> booleanCondition = Optional.of(new BooleanCheck(rawInput.stream().collect(Collectors.joining(" ")), operator, scopeDepthTracker.resolveScopeDepth()));
         if(operator.isPresent())
         {
+            scopeDepthTracker.applyDecrements();
             if(operator.get() != AND)
             {
                 scopeDepthTracker.untoggleArtificialAndDepth();
