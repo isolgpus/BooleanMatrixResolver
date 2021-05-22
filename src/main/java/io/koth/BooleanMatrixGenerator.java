@@ -22,14 +22,14 @@ public class BooleanMatrixGenerator {
                 booleanComparisons.add(new ComparisonForAssesment(new BooleanComparison(booleanCheck.statement, (i & 1 << booleanCheckIndex) > 0), booleanCheck.nextOperator, booleanCheck.scopeDepth));
             }
 
-            outcomes.add(new Outcome(booleanComparisons.stream().map(c -> c.booleanComparison).collect(Collectors.toList()), assesResult(booleanComparisons, new RecursiveAssessmentState())));
+            outcomes.add(new Outcome(booleanComparisons.stream().map(c -> c.booleanComparison).collect(Collectors.toList()), assessResult(booleanComparisons, new RecursiveAssessmentState())));
         }
 
 
         return new OutcomeMatrix(outcomes);
     }
 
-    private boolean assesResult(final List<ComparisonForAssesment> booleanComparisons, final RecursiveAssessmentState recursiveAssessmentState) {
+    private boolean assessResult(final List<ComparisonForAssesment> booleanComparisons, final RecursiveAssessmentState recursiveAssessmentState) {
         boolean result = false;
 
         boolean isFirstIterationOfLoop = true;
@@ -51,7 +51,7 @@ public class BooleanMatrixGenerator {
                     if(comparisonForAssesment.scopeDepth > recursiveAssessmentState.scopeDepth)
                     {
                         recursiveAssessmentState.scopeDepth++;
-                        result = assesResult(booleanComparisons, recursiveAssessmentState);
+                        result = assessResult(booleanComparisons, recursiveAssessmentState);
                     }
                     else
                     {
@@ -65,7 +65,7 @@ public class BooleanMatrixGenerator {
                     if(comparisonForAssesment.scopeDepth > recursiveAssessmentState.scopeDepth)
                     {
                         recursiveAssessmentState.scopeDepth++;
-                        result = operator.apply(result, assesResult(booleanComparisons, recursiveAssessmentState));
+                        result = operator.apply(result, assessResult(booleanComparisons, recursiveAssessmentState));
                     }
                     else
                     {
